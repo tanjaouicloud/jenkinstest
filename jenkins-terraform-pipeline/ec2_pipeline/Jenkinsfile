@@ -63,15 +63,21 @@ pipeline {
                     def ${action}  = false
                     try {
                         input message: 'Can you please confirm the ${action} ', ok: 'Ready to run ${action}  the Config'
-                        apply = true
+                        ${action} = true
                     } catch (err) {
                         ${action}  = false
                          currentBuild.result = 'UNSTABLE'
                     }
-                    if(${action} ){
+                    if(apply){
                         dir('jenkins-terraform-pipeline/ec2_pipeline/'){
                             unstash "terraform-plan"
-                            sh 'terraform ${action}  terraform.tfplan' 
+                            sh 'terraform apply  terraform.tfplan' 
+                        }
+                    }
+                    if(destroy){
+                        dir('jenkins-terraform-pipeline/ec2_pipeline/'){
+                            unstash "terraform-plan"
+                            sh 'terraform destroy  terraform.tfplan' 
                         }
                     }
                 }
